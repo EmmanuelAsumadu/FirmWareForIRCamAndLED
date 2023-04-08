@@ -32,59 +32,53 @@ int positionY[4];     ///< Store the Y position
  */
 void printResult();
 
-void setup()
-{
-  Serial.begin(115200);
-
-  /*!
-   *  @brief initailize the module.
-   */
-  myDFRobotIRPosition.begin();
+void setup() {
+	Serial.begin(115200);
+	pinMode(13, OUTPUT);
+	/*!
+	 *  @brief initailize the module.
+	 */
+	myDFRobotIRPosition.begin();
 }
 
-void loop()
-{
-  /*!
-   *  @brief request the position
-   */
-  myDFRobotIRPosition.requestPosition();
+void loop() {
+	/*!
+	 *  @brief request the position
+	 */
+	myDFRobotIRPosition.requestPosition();
 
-  /*!
-   *  @brief If there is data available, print it. Otherwise show the error message.
-   */
-  if (myDFRobotIRPosition.available()) {
-    for (int i=0; i<4; i++) {
-      positionX[i]=myDFRobotIRPosition.readX(i);
-      positionY[i]=myDFRobotIRPosition.readY(i);
-    }
+	/*!
+	 *  @brief If there is data available, print it. Otherwise show the error message.
+	 */
+	if (myDFRobotIRPosition.available()) {
+		for (int i = 0; i < 4; i++) {
+			positionX[i] = myDFRobotIRPosition.readX(i);
+			positionY[i] = myDFRobotIRPosition.readY(i);
+		}
 
-    printResult();
-  }
-  else{
-    Serial.println("Device not available!");
-  }
+		printResult();
+	} else {
+		Serial.println("Device not available!");
+	}
 
-  delay(50);
+	delay(50);
 }
 
 /*!
  *  @brief Print the position result.
  */
-void printResult()
-{
-  for (int i=0; i<4; i++) {
-    Serial.print(positionX[i]);
-    Serial.print(",");
+void printResult() {
+	for (int i = 0; i < 4; i++) {
+		Serial.print(positionX[i]);
+		Serial.print(",");
 
-    Serial.print(positionY[i]);
-    Serial.print(";");
-  }
-  Serial.println();
+		Serial.print(positionY[i]);
+		Serial.print(";");
+		if (positionX[i] != 1023) {
+			digitalWrite(13, HIGH);
+		} else {
+			digitalWrite(13,LOW);
+		}
+		Serial.println();
+	}
 }
-
-
-
-
-
-
-
