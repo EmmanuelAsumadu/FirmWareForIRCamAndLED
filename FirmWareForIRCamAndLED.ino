@@ -1,37 +1,90 @@
-/*
-  Blink
+/*!
+ * @file simpleDemo.ino
+ * @brief DFRobot's Positioning ir camera
+ * @n [Get the module here](http://www.dfrobot.com/index.php?route=product/product&product_id=1088)
+ * @n This example get the four lightest positions of the IR sources.
+ * @n [Connection and Diagram](http://www.dfrobot.com/wiki/index.php/Positioning_ir_camera#Connection_Diagram)
+ *
+ * @copyright	[DFRobot](http://www.dfrobot.com), 2016
+ * @copyright	GNU Lesser General Public License
+ *
+ * @author [Angelo](Angelo.qiao@dfrobot.com)
+ * @version  V1.0
+ * @date  2016-02-17
+ */
 
-  Turns an LED on for one second, then off for one second, repeatedly.
+#include "Arduino.h"
+#include "Wire.h"
 
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
+/*!
+ * @brief Library for DFRobot's IR Position Camera
+ * @author [Angelo](Angelo.qiao@dfrobot.com)
+ */
+#include "DFRobotIRPosition.h"
 
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
+DFRobotIRPosition myDFRobotIRPosition;
 
-  This example code is in the public domain.
+int positionX[4];     ///< Store the X position
+int positionY[4];     ///< Store the Y position
 
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
-*/
+/*!
+ *  @brief Print the position result.
+ */
+void printResult();
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+void setup()
+{
+  Serial.begin(115200);
+
+  /*!
+   *  @brief initailize the module.
+   */
+  myDFRobotIRPosition.begin();
 }
 
-// the loop function runs over and over again forever
-void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(1000);                      // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
-  delay(1000);                      // wait for a second
+void loop()
+{
+  /*!
+   *  @brief request the position
+   */
+  myDFRobotIRPosition.requestPosition();
+
+  /*!
+   *  @brief If there is data available, print it. Otherwise show the error message.
+   */
+  if (myDFRobotIRPosition.available()) {
+    for (int i=0; i<4; i++) {
+      positionX[i]=myDFRobotIRPosition.readX(i);
+      positionY[i]=myDFRobotIRPosition.readY(i);
+    }
+
+    printResult();
+  }
+  else{
+    Serial.println("Device not available!");
+  }
+
+  delay(50);
 }
+
+/*!
+ *  @brief Print the position result.
+ */
+void printResult()
+{
+  for (int i=0; i<4; i++) {
+    Serial.print(positionX[i]);
+    Serial.print(",");
+
+    Serial.print(positionY[i]);
+    Serial.print(";");
+  }
+  Serial.println();
+}
+
+
+
+
+
+
+
