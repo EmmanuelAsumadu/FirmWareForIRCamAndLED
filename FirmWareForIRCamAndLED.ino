@@ -12,10 +12,13 @@
  * @version  V1.0
  * @date  2016-02-17
  */
-
+#include <ESP32Servo.h>
+#include "ESP32PWM.h"
 #include "Arduino.h"
 #include "Wire.h"
-
+ESP32PWM pwm;
+int freq = 45;
+bool IsFireDetected = LOW;
 /*!
  * @brief Library for DFRobot's IR Position Camera
  * @author [Angelo](Angelo.qiao@dfrobot.com)
@@ -33,8 +36,15 @@ int positionY[4];     ///< Store the Y position
 void printResult();
 
 void setup() {
+
+	pinMode(13,OUTPUT);
+
+	ESP32PWM::allocateTimer(0);
+	ESP32PWM::allocateTimer(1);
+	ESP32PWM::allocateTimer(2);
+	ESP32PWM::allocateTimer(3);
 	Serial.begin(115200);
-	pinMode(13, OUTPUT);
+
 	/*!
 	 *  @brief initailize the module.
 	 */
@@ -49,7 +59,9 @@ void loop() {
 
 	/*!
 	 *  @brief If there is data available, print it. Otherwise show the error message.
-	 */
+	  */
+
+
 	if (myDFRobotIRPosition.available()) {
 		for (int i = 0; i < 4; i++) {
 			positionX[i] = myDFRobotIRPosition.readX(i);
@@ -68,6 +80,7 @@ void loop() {
  *  @brief Print the position result.
  */
 void printResult() {
+	 IsFireDetected=LOW;
 	for (int i = 0; i < 4; i++) {
 		Serial.print(positionX[i]);
 		Serial.print(",");
@@ -75,10 +88,12 @@ void printResult() {
 		Serial.print(positionY[i]);
 		Serial.print(";");
 		if (positionX[i] != 1023) {
-			digitalWrite(13, HIGH);
-		} else {
-			digitalWrite(13,LOW);
+			IsFireDetected=HIGH;
 		}
-		Serial.println();
+
+
 	}
+
+	Serial.println();
+	digitalWrite(13,IsFireDetected);
 }
