@@ -18,6 +18,7 @@
 #include "Wire.h"
 ESP32PWM pwm;
 int freq = 45;
+int APin = 18;
 bool IsFireDetected = LOW;
 /*!
  * @brief Library for DFRobot's IR Position Camera
@@ -92,6 +93,12 @@ void printResult() {
 		}
 
 
+	}
+	if(IsFireDetected==HIGH){
+		pwm.attachPin(APin, freq, 10);
+		pwm.adjustFrequency(freq, 0.5);
+	}else{
+		pwm.detachPin(APin);
 	}
 
 	Serial.println();
